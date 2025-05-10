@@ -1,0 +1,49 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+df = pd.read_csv("/emergency_service_routing_with_timestamps.csv")
+
+# Convert timestamp to datetime
+df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+
+# Extract date components
+df['Hour'] = df['Timestamp'].dt.hour
+df['Day'] = df['Timestamp'].dt.date
+df['Month'] = df['Timestamp'].dt.month
+
+# Plot 1: Response time distribution
+plt.figure(figsize=(10, 6))
+sns.histplot(df['Response_Time'], bins=50, kde=True)
+plt.title("Distribution of Response Times")
+plt.xlabel("Response Time (minutes)")
+plt.ylabel("Frequency")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Plot 2: Average response time by region
+plt.figure(figsize=(8, 6))
+sns.barplot(data=df, x='Region_Type', y='Response_Time', estimator='mean', ci='sd')
+plt.title("Average Response Time by Region")
+plt.ylabel("Avg Response Time (minutes)")
+plt.tight_layout()
+plt.show()
+
+# Plot 3: Number of Incidents by Hour
+plt.figure(figsize=(10, 6))
+sns.countplot(data=df, x='Hour', order=range(24))
+plt.title("Number of Incidents by Hour of Day")
+plt.xlabel("Hour")
+plt.ylabel("Incident Count")
+plt.tight_layout()
+plt.show()
+
+# Plot 4: Correlation heatmap
+plt.figure(figsize=(10, 8))
+corr = df[['Response_Time', 'Distance_to_Incident', 'Drone_Speed', 'Ambulance_Speed', 'Battery_Life', 'Fuel_Level']].corr()
+sns.heatmap(corr, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title("Correlation Heatmap")
+plt.tight_layout()
+plt.show()
